@@ -3,7 +3,6 @@ import re
 import time
 import praw
 import boto3
-import uuid
 
 try:
     import dotenv
@@ -41,7 +40,7 @@ def lambda_handler(event: dict, context):
         client_id=APP_ID, client_secret=APP_SECRET, user_agent=USER_AGENT
     )
     payload = {
-        "ID": str(uuid.uuid4()),
+        "Matriculation": os.getenv("MATRICULATION"),
         "ProcessEpoch": int(time.time() * 1000),
         "Pending": 0,
         "Accepted": 0,
