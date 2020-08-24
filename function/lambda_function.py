@@ -21,6 +21,7 @@ APP_ID = os.getenv("REDDIT_APP_ID")
 APP_SECRET = os.getenv("REDDIT_APP_SECRET")
 SUBMISSION_ID = os.getenv("SUBMISSION_ID")
 USER_AGENT = f"{os.name}:{APP_ID}:{VERSION} (by {AUTHOR})"
+DYNAMODB_TABLE = os.getenv("DYNAMODB_TABLE")
 
 ########################################################################################################################
 # RegEx
@@ -60,6 +61,6 @@ def lambda_handler(event: dict, context):
 
     # Load to DynamoDB
     dynamodb = boto3.resource("dynamodb")
-    table = dynamodb.Table("DecisionTracking")
+    table = dynamodb.Table(DYNAMODB_TABLE)
     table.put_item(Item=payload)
     return payload
