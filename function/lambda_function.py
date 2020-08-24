@@ -29,31 +29,37 @@ R_APPLIED = re.compile(r"(status)(.*)(applied)|(review)|(n/a)", flags=re.IGNOREC
 R_ACCEPTED = re.compile(r"(status)(.*)(accept)", flags=re.IGNORECASE)
 R_REJECTED = re.compile(r"(status)(.*)(reject)", flags=re.IGNORECASE)
 
+
 ########################################################################################################################
 # Application
 ########################################################################################################################
+def lambda_handler(event: dict, context):
+    # Setup client and payload
+    reddit = praw.Reddit(
+        client_id=APP_ID, client_secret=APP_SECRET, user_agent=USER_AGENT
+    )
+    payload = {
+        "ProcessDate": dt.datetime.now(dt.timezone.utc)
+        .isoformat()
+        .replace("+00:00", "Z"),
+        "Pending": 0,
+        "Accepted": 0,
+        "Rejected": 0,
+    }
 
-# Setup client and payload
-reddit = praw.Reddit(client_id=APP_ID, client_secret=APP_SECRET, user_agent=USER_AGENT)
-payload = {
-    "ProcessDate": dt.datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z"),
-    "Pending": 0,
-    "Accepted": 0,
-    "Rejected": 0,
-}
+    # Parse submission comments
+    submission = reddit.submission(SUBMISSION_ID)
+    submission.comments.replace_more(limit=100)
+    for comment in submission.comments:
+        if R_APPLIED.search(comment.body):
+            payload["Pending"] += 1
+        elif R_ACCEPTED.search(comment.body):
+            payload["Accepted"] += 1
+        elif R_REJECTED.search(comment.body):
+            payload["Rejected"] += 1
 
-# Parse submission comments
-submission = reddit.submission(SUBMISSION_ID)
-submission.comments.replace_more(limit=100)
-for comment in submission.comments:
-    if R_APPLIED.search(comment.body):
-        payload["Pending"] += 1
-    elif R_ACCEPTED.search(comment.body):
-        payload["Accepted"] += 1
-    elif R_REJECTED.search(comment.body):
-        payload["Rejected"] += 1
-
-# Load to DynamoDB
-dynamodb = boto3.resource("dynamodb")
-table = dynamodb.Table("DecisionTracking")
-table.put_item(Item=payload)
+    # Load to DynamoDB
+    dynamodb = boto3.resource("dynamodb")
+    table = dynamodb.Table("DecisionTracking")
+    table.put_item(Item=payload)
+    return payload
