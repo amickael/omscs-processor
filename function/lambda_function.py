@@ -1,6 +1,6 @@
 import os
 import re
-import datetime as dt
+import time
 import praw
 import boto3
 
@@ -40,9 +40,7 @@ def lambda_handler(event: dict, context):
         client_id=APP_ID, client_secret=APP_SECRET, user_agent=USER_AGENT
     )
     payload = {
-        "ProcessDate": dt.datetime.now(dt.timezone.utc)
-        .isoformat()
-        .replace("+00:00", "Z"),
+        "ProcessEpoch": int(time.time() * 1000),
         "Pending": 0,
         "Accepted": 0,
         "Rejected": 0,
