@@ -22,6 +22,7 @@ APP_SECRET = os.getenv("REDDIT_APP_SECRET")
 SUBMISSION_ID = os.getenv("SUBMISSION_ID")
 USER_AGENT = f"{os.name}:{APP_ID}:{VERSION} (by {AUTHOR})"
 DYNAMODB_TABLE = os.getenv("DYNAMODB_TABLE")
+MATRICULATION = os.getenv("MATRICULATION")
 
 ########################################################################################################################
 # RegEx
@@ -40,7 +41,7 @@ def lambda_handler(event: dict, context):
         client_id=APP_ID, client_secret=APP_SECRET, user_agent=USER_AGENT
     )
     payload = {
-        "Matriculation": os.getenv("MATRICULATION"),
+        "Matriculation": MATRICULATION,
         "ProcessEpoch": int(time.time() * 1000),
         "Pending": 0,
         "Accepted": 0,
