@@ -22,6 +22,8 @@ APP_SECRET = os.getenv("REDDIT_APP_SECRET")
 SUBMISSION_ID = os.getenv("SUBMISSION_ID")
 USER_AGENT = f"{os.name}:{APP_ID}:{VERSION} (by {AUTHOR})"
 DYNAMODB_TABLE = os.getenv("DYNAMODB_TABLE")
+DYNAMODB_KEY = os.getenv("DYNAMODB_KEY")
+DYNAMODB_SORT = os.getenv("DYNAMODB_SORT")
 MATRICULATION = os.getenv("MATRICULATION")
 
 ########################################################################################################################
@@ -41,8 +43,8 @@ def lambda_handler(event: dict, context):
         client_id=APP_ID, client_secret=APP_SECRET, user_agent=USER_AGENT
     )
     payload = {
-        "Matriculation": MATRICULATION,
-        "ProcessEpoch": int(time.time() * 1000),
+        DYNAMODB_KEY: MATRICULATION,
+        DYNAMODB_SORT: int(time.time() * 1000),
         "Pending": 0,
         "Accepted": 0,
         "Rejected": 0,
