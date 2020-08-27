@@ -31,7 +31,7 @@ MATRICULATION = os.getenv("MATRICULATION")
 ########################################################################################################################
 R_APPLIED = re.compile(r"(status)(.*)(applied|review|n/a)", flags=re.IGNORECASE)
 R_ACCEPTED = re.compile(r"(status)(.*)(accept)", flags=re.IGNORECASE)
-R_REJECTED = re.compile(r"(status)(.*)(reject)", flags=re.IGNORECASE)
+R_REJECTED = re.compile(r"(status)(.*)(reject|denied)", flags=re.IGNORECASE)
 
 
 ########################################################################################################################
